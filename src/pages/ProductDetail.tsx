@@ -11,10 +11,12 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { toast } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/context/CartContext';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   
   const productId = id ? parseInt(id) : 0;
   const product = getProductById(productId);
@@ -43,7 +45,7 @@ const ProductDetail = () => {
   
   const sizes = ["XS", "S", "M", "L", "XL"];
   
-  const addToCart = () => {
+  const handleAddToCart = () => {
     if (!selectedSize) {
       toast.error("Please select a size");
       return;
@@ -54,8 +56,12 @@ const ProductDetail = () => {
       return;
     }
     
-    toast.success(`${name} added to your cart!`);
-    // In a real app, we would add the product to the cart here
+    addToCart(product, quantity, selectedSize);
+  };
+  
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate('/cart');
   };
   
   return (
@@ -184,12 +190,20 @@ const ProductDetail = () => {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <Button 
-                  onClick={addToCart}
+                  onClick={handleAddToCart}
                   className="bg-theme-purple hover:bg-theme-darkPurple text-white flex-1"
                   size="lg"
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
                   Add to Cart
+                </Button>
+                <Button 
+                  onClick={handleBuyNow}
+                  variant="outline" 
+                  size="lg" 
+                  className="border-theme-purple text-theme-purple hover:bg-theme-purple/10 flex-1"
+                >
+                  Buy Now
                 </Button>
                 <Button variant="outline" size="lg" className="border-gray-300">
                   <Heart className="h-5 w-5" />
